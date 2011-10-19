@@ -2,12 +2,8 @@ package org.auscope.portal.server.web;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Writer;
-
 import junit.framework.Assert;
 
 import org.apache.commons.httpclient.HttpClient;
@@ -35,7 +31,7 @@ public class TestHttpServiceCaller {
     }};
     private HttpClient mockHttpClient;
     private HttpConnectionManagerParams mockParams;
-    private IWFSGetFeatureMethodMaker methodMaker;
+    private WFSGetFeatureMethodMaker methodMaker;
 
     private HttpServiceCaller httpServiceCaller;
     private static final String SERVICE_URL = "http://localhost?";
@@ -47,7 +43,7 @@ public class TestHttpServiceCaller {
         mockHttpClient = context.mock(HttpClient.class);
         mockParams = context.mock(HttpConnectionManagerParams.class);
         httpServiceCaller = new HttpServiceCaller();
-        methodMaker = new WFSGetFeatureMethodMakerPOST();
+        methodMaker = new WFSGetFeatureMethodMaker();
         httpServiceCaller.setClientParams(mockParams);
     }
 

@@ -15,12 +15,7 @@ import org.auscope.portal.server.domain.filter.FilterBoundingBox;
  * @author Jarek Sanders
  * @version $Id$
  */
-@SuppressWarnings("deprecation")
 public class MineralOccurrenceFilter extends AbstractFilter {
-
-    // TODO: Include ENDOWMENT when GeoServers accept this element
-    //       (...you may just just put it b/w RESERVE and RESOURCE)
-
 
     public enum MeasureTypes { ENDOWMENT, RESERVE, RESOURCE, ANY, NONE }
 
@@ -206,10 +201,10 @@ public class MineralOccurrenceFilter extends AbstractFilter {
      */
     private MeasureTypes getMeasureType(String measureType) {
 
-    	if (measureType == null) {
-    		return MeasureTypes.NONE;
-    	}
-    	
+        if (measureType == null) {
+            return MeasureTypes.NONE;
+        }
+
         if (measureType.equals("Resource")) {
             return MeasureTypes.RESOURCE;
         } else if (measureType.equals("Reserve")) {

@@ -18,16 +18,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.auscope.portal.csw.CSWGeographicBoundingBox;
+import org.auscope.portal.csw.record.CSWGeographicBoundingBox;
 import org.auscope.portal.server.domain.wcs.DescribeCoverageRecord;
 import org.auscope.portal.server.util.PortalPropertyPlaceholderConfigurer;
 import org.auscope.portal.server.web.IWCSDescribeCoverageMethodMaker;
 import org.auscope.portal.server.web.IWCSGetCoverageMethodMaker;
 import org.auscope.portal.server.web.service.HttpServiceCaller;
-import org.auscope.portal.server.web.view.JSONModelAndView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
@@ -39,7 +37,7 @@ import org.springframework.web.servlet.ModelAndView;
  *
  */
 @Controller
-public class WCSController {
+public class WCSController extends BasePortalController {
     protected final Log logger = LogFactory.getLog(getClass());
 
     private HttpServiceCaller serviceCaller;
@@ -313,7 +311,7 @@ public class WCSController {
             method = describeCoverageMethodMaker.makeMethod(serviceUrl, layerName);
         } catch (Exception ex) {
             logger.error("Error generating method", ex);
-            return getDescribeCoverageResponse(false, "Error generating request method. Are layerName and serviceUrl specified?", null, null);
+            return generateJSONResponseMAV(false, null, "Error generating request method. Are layerName and serviceUrl specified?");
         }
 
         String xmlResponse = null;
@@ -321,7 +319,7 @@ public class WCSController {
             xmlResponse = serviceCaller.getMethodResponseAsString(method, serviceCaller.getHttpClient());
         } catch (Exception ex) {
             logger.info("Error making request", ex);
-            return getDescribeCoverageResponse(false, "Error occured whilst communicating to remote service: " + ex.getMessage(), null, null);
+            return generateJSONResponseMAV(false, null, "Error occured whilst communicating to remote service: " + ex.getMessage());
         }
 
         DescribeCoverageRecord[] records = null;
@@ -329,20 +327,9 @@ public class WCSController {
             records = DescribeCoverageRecord.parseRecords(xmlResponse);
         } catch (Exception ex) {
             logger.warn("Error parsing request", ex);
-            return getDescribeCoverageResponse(false, "Error occured whilst parsing response: " + ex.getMessage(), xmlResponse, null);
+            return generateJSONResponseMAV(false, null, "Error occured whilst parsing response: " + ex.getMessage());
         }
 
-        return getDescribeCoverageResponse(true, "No errors found",xmlResponse, records );
-    }
-
-    private JSONModelAndView getDescribeCoverageResponse(boolean success, String errorMessage, String responseXml, DescribeCoverageRecord[] records ) {
-
-        ModelMap response = new ModelMap();
-        response.put("success", success);
-        response.put("errorMsg", errorMessage);
-        response.put("rawXml", responseXml);
-        response.put("records", records);
-
-        return new JSONModelAndView(response);
+        return generateJSONResponseMAV(true, records, "");
     }
 }
